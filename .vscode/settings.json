@@ -1,0 +1,23 @@
+{
+    "telemetry.enableTelemetry": false,
+    "telemetry.telemetryLevel": "off",
+    "editor.formatOnSave": true,
+    "python.analysis.indexing": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--max-line-length",
+        "120"
+    ],
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "120"
+    ],
+    "autoDocstring.docstringFormat": "numpy",
+    "autoDocstring.startOnNewLine": true,
+    "python.analysis.extraPaths": [
+        "/opt/ros/foxy/lib/python3.8/site-packages/"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/foxy/lib/python3.8/site-packages"
+    ]
+}
