@@ -24,6 +24,9 @@ find_package(petra_interfaces REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(cpp_core REQUIRED)
 find_package(nav2_msgs REQUIRED)
+# for python code
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy REQUIRED)
 
 include_directories(
   include 
@@ -85,5 +88,14 @@ install(TARGETS
   Coordinator
   MinimalNavAction
   DESTINATION lib/${PROJECT_NAME})
+
+# for python code
+ament_python_install_package(${PROJECT_NAME})
+
+install(PROGRAMS
+    ${PROJECT_NAME}/detect_ball_node.py
+    DESTINATION lib/${PROJECT_NAME}
+)
+
 
 ament_package()
