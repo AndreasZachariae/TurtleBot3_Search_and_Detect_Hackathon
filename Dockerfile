@@ -14,13 +14,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-pip \
     ros-$ROS_DISTRO-behaviortree-cpp-v3 \
     ros-$ROS_DISTRO-nav2-msgs \
-    ros-$ROS_DISTRO-nav2-common \
-    ros-$ROS_DISTRO-nav-msgs \
-    ros-$ROS_DISTRO-navigation2 \
-    ros-$ROS_DISTRO-nav2-bringup \
-    ros-$ROS_DISTRO-turtlebot3-* \
     ros-$ROS_DISTRO-rviz2 \
-    ros-$ROS_DISTRO-gazebo-* \
+    ros-$ROS_DISTRO-gazebo-msgs \
     qtbase5-dev \
     libqt5svg5-dev \
     libzmq3-dev \
@@ -49,9 +44,9 @@ RUN groupadd -g "$GID" "$USER"  && \
     echo "%sudo ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/sudogrp
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >> /etc/bash.bashrc
 
-# COPY config/dds_profile.xml /home/$USER
-# RUN chown $USER:$USER /home/$USER/dds_profile.xml
-# ENV FASTRTPS_DEFAULT_PROFILES_FILE=/home/$USER/dds_profile.xml
+COPY dds_profile.xml /home/$USER
+RUN chown $USER:$USER /home/$USER/dds_profile.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/home/$USER/dds_profile.xml
 
 USER $USER 
 RUN mkdir -p /home/$USER/ros2_ws/src
@@ -60,12 +55,13 @@ RUN mkdir -p /home/$USER/ros2_ws/src
 ##                                 User Dependecies                         ##
 ##############################################################################
 WORKDIR /home/$USER/ros2_ws/src
+RUN git config --global advice.detachedHead false
 RUN git clone --depth 1 -b v1.1.0 https://project_55_bot:glpat-DjsyN_ixYnq-duDb_Sip@www.w.hs-karlsruhe.de/gitlab/iras/research-projects/petra/petra_interfaces.git
 RUN git clone --depth 1 -b foxy https://project_240_bot:glpat-stK1tgiDxr44VV8X95r7@www.w.hs-karlsruhe.de/gitlab/iras/common/behaviortree_ros.git
 RUN git clone --depth 1 -b v1.0.0 https://project_109_bot:glpat-ydJpMPNbrfjXxzYoJbvS@www.w.hs-karlsruhe.de/gitlab/iras/core/cpp_core.git
 RUN git clone --depth 1 https://project_29_bot:glpat-gsSiSptRUVJHN8oZiffm@www.w.hs-karlsruhe.de/gitlab/iras/research-projects/petra/behavior-tree/petra_dummies.git
 RUN git clone --depth 1 https://github.com/BehaviorTree/Groot.git
-# COPY . ./behavior-tree-coordinator
+COPY ./src ./behavior-tree-coordinator
 
 ENV TURTLEBOT3_MODEL=waffle
 ENV GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/$ROS_DISTRO/share/turtlebot3_gazebo/models
