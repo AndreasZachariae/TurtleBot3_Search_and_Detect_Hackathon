@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Repeat num_cycles="3">
+            <ReactiveSequence>
+                <Fallback>
+                    <Inverter>
+                        <Condition ID="IsBallFound" ball_quaternion_w="{ball_q_w}" ball_quaternion_x="{ball_q_x}" ball_quaternion_y="{ball_q_y}" ball_quaternion_z="{ball_q_z}" next_goal_trigger="{trigger}" ball_x="{ball_x}" ball_y="{ball_y}"/>
+                    </Inverter>
+                    <Sequence>
+                        <Action ID="BaseMovement" quaternion_w="{ball_q_w}" quaternion_x="{ball_q_x}" quaternion_y="{ball_q_y}" quaternion_z="{ball_q_z}" x="{ball_x}" y="{ball_z}"/>
+                        <ForceSuccess>
+                            <Condition ID="IsGoalDone" next_goal_trigger="{trigger}"/>
+                        </ForceSuccess>
+                    </Sequence>
+                </Fallback>
+                <Action ID="Spin" target_yaw="3"/>
+                <Action ID="BaseMovement" quaternion_w="1" quaternion_x="0" quaternion_y="0" quaternion_z="0" x="-0.5" y="-0.5"/>
+                <Action ID="Spin" target_yaw="3"/>
+                <Action ID="BaseMovement" quaternion_w="1" quaternion_x="0" quaternion_y="0" quaternion_z="0" x="0.5" y="0.5"/>
+            </ReactiveSequence>
+        </Repeat>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ArmMovement">
+            <input_port name="gripper_position" type="float"/>
+            <input_port name="x_mm" type="float"/>
+            <input_port name="y_mm" type="float"/>
+            <input_port name="z_mm" type="float"/>
+        </Action>
+        <Action ID="BaseMovement">
+            <input_port name="quaternion_w" type="float"/>
+            <input_port name="quaternion_x" type="float"/>
+            <input_port name="quaternion_y" type="float"/>
+            <input_port name="quaternion_z" type="float"/>
+            <input_port name="x" type="float"/>
+            <input_port name="y" type="float"/>
+        </Action>
+        <Action ID="BatteryCharging">
+            <input_port name="goal_percentage" type="float"/>
+        </Action>
+        <Condition ID="CheckBattery"/>
+        <Condition ID="CheckStop"/>
+        <Condition ID="IsBallFound">
+            <output_port name="ball_quaternion_w" type="float"/>
+            <output_port name="ball_quaternion_x" type="float"/>
+            <output_port name="ball_quaternion_y" type="float"/>
+            <output_port name="ball_quaternion_z" type="float"/>
+            <input_port name="next_goal_trigger" type="bool"/>
+            <output_port name="ball_x" type="float"/>
+            <output_port name="ball_y" type="float"/>
+        </Condition>
+        <Condition ID="IsGoalDone">
+            <output_port name="next_goal_trigger" type="bool"/>
+        </Condition>
+        <Action ID="Spin">
+            <input_port name="target_yaw" type="float"/>
+        </Action>
+        <Action ID="Wait">
+            <input_port name="seconds" type="int"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
