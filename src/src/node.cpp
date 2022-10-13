@@ -17,6 +17,9 @@
 #include <behavior_tree_coordinator/actions/Wait.h>
 #include <behavior_tree_coordinator/conditions/CheckStop.h>
 #include <behavior_tree_coordinator/conditions/CheckBattery.h>
+#include <behavior_tree_coordinator/conditions/IsBallFound.h>
+#include <behavior_tree_coordinator/conditions/IsGoalDone.h>
+#include <behavior_tree_coordinator/actions/Spin.h>
 
 BT::Tree create_tree(const std::string &path)
 {
@@ -27,6 +30,9 @@ BT::Tree create_tree(const std::string &path)
     factory.registerNodeType<ArmMovement>("ArmMovement");
     factory.registerNodeType<BatteryCharging>("BatteryCharging");
     factory.registerNodeType<Wait>("Wait");
+    factory.registerNodeType<IsBallFound>("IsBallFound");
+    factory.registerNodeType<IsGoalDone>("IsGoalDone");
+    factory.registerNodeType<Spin>("Spin");
 
     return factory.createTreeFromFile(path);
 }

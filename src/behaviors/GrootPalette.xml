@@ -2,6 +2,18 @@
     <TreeNodesModel>
         <Condition ID="CheckStop"/>
         <Condition ID="CheckBattery"/>
+        <Condition ID="IsBallFound">
+            <input_port name="next_goal_trigger" type="bool"/>
+            <output_port name="ball_x" type="float"/>
+            <output_port name="ball_y" type="float"/>
+            <output_port name="ball_quaternion_x" type="float"/>
+            <output_port name="ball_quaternion_y" type="float"/>
+            <output_port name="ball_quaternion_z" type="float"/>
+            <output_port name="ball_quaternion_w" type="float"/>
+        </Condition>
+        <Condition ID="IsGoalDone">
+            <output_port name="next_goal_trigger" type="bool"/>
+        </Condition>
 
         <Action ID="ArmMovement">
             <input_port name="x_mm" type="float"/>
@@ -15,9 +27,16 @@
         <Action ID="BaseMovement">
             <input_port name="x" type="float"/>
             <input_port name="y" type="float"/>
+            <input_port name="ball_quaternion_x" type="float"/>
+            <input_port name="ball_quaternion_y" type="float"/>
+            <input_port name="ball_quaternion_z" type="float"/>
+            <input_port name="ball_quaternion_w" type="float"/>
         </Action>
         <Action ID="Wait">
             <input_port name="seconds" type="int"/>
         </Action>
+        <Action ID="Spin">
+            <input_port name="target_yaw" type="float"/>
+        </Action>
     </TreeNodesModel>
- </root>
+</root>
