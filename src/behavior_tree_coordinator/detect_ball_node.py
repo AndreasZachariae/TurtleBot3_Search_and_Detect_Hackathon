@@ -3,6 +3,12 @@
 import rclpy
 from rclpy.node import Node
 import message_filters
+from sensor_msgs.msg import Image
+from geometry_msgs.msg import Pose
+import cv2
+import numpy as np
+import pyrealsense2 as rs
+from cv_bridge import CvBridge
 
 
 class DetectBallNode(Node):
@@ -10,68 +16,53 @@ class DetectBallNode(Node):
     def __init__(self):
         super().__init__('detect_ball_node_node')
 
-        self.pos_publisher = self.create_publisher(PatientPosition_msg, "/patient_position/position", 1)
+        self.pos_publisher = self.create_publisher(Pose, "/patient_position/position", 10)
 
-        human_list_subscriber = message_filters.Subscriber(self, OpenPoseHumanList, self.restamped_patient_topic)
-        depth_image_subscriber = message_filters.Subscriber(self, Image, self.depth_image_topic)
+        image_subscriber = message_filters.Subscriber(self, Image, "/intel_realsense_r200_depth/image_raw")
+        depth_image_subscriber = message_filters.Subscriber(self, Image, "/intel_realsense_r200_depth/depth/image_raw")
         filter = message_filters.ApproximateTimeSynchronizer(
-            [human_list_subscriber, depth_image_subscriber], queue_size=30, slop=3)
-        filter.registerCallback(self.synchron_openpose_depth)
+            [image_subscriber, depth_image_subscriber], queue_size=30, slop=3)
+        filter.registerCallback(self.synchron_image_depth)
+
+        self.bridge = CvBridge()
 
         self.get_logger().info("Started detect_ball_node_node")
 
-    def synchron_openpose_depth(self, openpose_msg, depth_msg):
+    def synchron_image_depth(self, image_msg, depth_msg):
 
-        # print("openpose_img:", openpose_msg.image_header.stamp.sec, ".", openpose_msg.image_header.stamp.nanosec)
-        # print("depth_img:   ", depth_msg.header.stamp.sec, ".", depth_msg.header.stamp.nanosec)
+        # print("new image pair recieved")
 
-        # self.counter += 1
-        # print("position", self.counter)
+        cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        cv_depth_image = self.bridge.imgmsg_to_cv2(depth_msg, "passthrough")
 
-        if openpose_msg.num_humans != 1:
-            print("Unexpected num of humans")
-            return
+        lab = cv2.cvtColor(cv_image, cv2.COLOR_BGR2LAB)
 
-        indices = []
+        # Perform Otsu threshold on the A-channel
+        red_thresh = cv2.threshold(lab[:, :, 1], 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
-        request = PixelToPoint.Request()
-        request.height = int(self.rgb_image_height)
-        request.width = int(self.rgb_image_width)
-        request.depth_image = depth_msg
-        request.camera_type = self.camera_type
+        # Find contours in the binary image
+        contours, hierarchy = cv2.findContours(red_thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        for c in contours:
+            # Calculate moments for each contour
+            M = cv2.moments(c)
 
-        # self.get_logger().info(self.camera_type)
+            # Calculate x,y coordinate of center
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
 
-        if self.only_centroid:
-            centroid_x, centroid_y = self.get_centroid(openpose_msg.human_list[0])
-            pixel = Point()
-            pixel.x = float(centroid_x)
-            pixel.y = float(centroid_y)
-            request.pixels.append(pixel)
-        else:
-            for index, keypoint in enumerate(openpose_msg.human_list[0].body_key_points_with_prob):
-                if keypoint.prob != 0:
-                    pixel = Point()
-                    pixel.x = keypoint.x
-                    pixel.y = keypoint.y
+            # Mark center with small circle
+            cv2.circle(cv_image, (cX, cY), 5, (0, 0, 0), -1)
 
-                    request.pixels.append(pixel)
-                    indices.append(index)
+        print(f"Found ball at {cX}, {cY}")
 
-        response = self.client.call(request)
+        cv2.imshow("detected ball", cv_depth_image)
+        cv2.waitKey(1)
 
-        pos_msg = PatientPosition_msg()
-        pos_msg.image_header = openpose_msg.image_header
-
-        if self.only_centroid:
-            pos_msg.centroid = response.points[0]
-        else:
-            pos_msg.keypoints = response.points
-            pos_msg.indices = indices
-
-        self.pos_publisher.publish(pos_msg)
-
-        # self.get_logger().info(" ".join([str(point.z) for point in response.points]))
+        # depth = depth_frame.get_distance(j, i)
+        # depth_point = rs.rs2_deproject_pixel_to_point(
+        #     depth_intrin, [j, i], depth)
+        # text = "%.5lf, %.5lf, %.5lf\n" % (
+        #     depth_point[0], depth_point[1], depth_point[2])
 
 
 def main(args=None):
