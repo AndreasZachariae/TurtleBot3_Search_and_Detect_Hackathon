@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     ros-$ROS_DISTRO-nav2-msgs \
     ros-$ROS_DISTRO-rviz2 \
     ros-$ROS_DISTRO-gazebo-msgs \
+    ros-$ROS_DISTRO-cv-bridge \
     qtbase5-dev \
     libqt5svg5-dev \
     libzmq3-dev \
@@ -25,6 +26,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install -U pip setuptools
+RUN pip3 install \
+    opencv-python \
+    pyrealsense2
 
 ##############################################################################
 ##                                 Create User                              ##
