@@ -22,16 +22,22 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        # Node(
+        #     package='petra_dummies',
+        #     executable='ManipulatorDummy',
+        #     name='ManipulatorDummy',
+        #     output='log'
+        # ),
+        # Node(
+        #     package='petra_dummies',
+        #     executable='BatteryDummy',
+        #     name='BatteryDummy',
+        #     output='log'
+        # ),
         Node(
-            package='petra_dummies',
-            executable='ManipulatorDummy',
-            name='ManipulatorDummy',
-            output='log'
-        ),
-        Node(
-            package='petra_dummies',
-            executable='BatteryDummy',
-            name='BatteryDummy',
+            package='behavior_tree_coordinator',
+            executable='detect_ball_node.py',
+            name='detect_ball_node',
             output='log'
         ),
         Node(
