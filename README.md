@@ -47,3 +47,7 @@ Start Keyboard node for giving input (in a new docker shell)
     ros2 topic pub --once /goal_pose geometry_msgs/msg/PoseStamped "{header: {frame_id: "map"}, pose: {position: {x: -2}}}"
     ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "{pose: {header: {frame_id: "map"}, pose: {position: {x: 2}}}}"
 
+## Resources 
+
+https://medium.com/@yasuhirachiba/converting-2d-image-coordinates-to-3d-coordinates-using-ros-intel-realsense-d435-kinect-88621e8e733a
+
