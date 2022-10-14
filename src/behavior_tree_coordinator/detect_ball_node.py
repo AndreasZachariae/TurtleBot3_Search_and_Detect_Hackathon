@@ -6,6 +6,7 @@ from rclpy.parameter import Parameter
 import message_filters
 from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import Pose, TransformStamped
+from std_msgs.msg import Bool
 import cv2
 import numpy as np
 import pyrealsense2 as rs
@@ -23,6 +24,7 @@ class DetectBallNode(Node):
         self.set_parameters([Parameter(name="use_sim_time", value=True)])
 
         self.ball_pose_publisher = self.create_publisher(Pose, "/ball_pose", 10)
+        self.ball_found_publisher = self.create_publisher(Bool, "/ball_found", 10)
         self.depth_camera_info = self.create_subscription(
             CameraInfo, "/intel_realsense_r200_depth/depth/camera_info", self.depth_camera_info_callback, 10)
 
@@ -74,6 +76,9 @@ class DetectBallNode(Node):
 
         if len(contours) != 1:
             # self.get_logger().info("none or too many red blob(s) detected, passing...")
+            msg = Bool()
+            msg.data = False
+            self.ball_found_publisher.publish(msg)
             return
 
         # Calculate moments for contour
@@ -91,9 +96,9 @@ class DetectBallNode(Node):
             cY = image_msg.width-1
 
         # Mark center with small circle and display
-        # cv2.circle(cv_depth_image, (cX, cY), 5, (0, 0, 0), 2)
-        # cv2.imshow("detected ball", cv_depth_image)
-        # cv2.waitKey(1)
+        cv2.circle(cv_depth_image, (cX, cY), 5, (0, 0, 0), 2)
+        cv2.imshow("detected ball", cv_depth_image)
+        cv2.waitKey(1)
 
         # Get depth value on ball pixel position and deproject to 3D coords
         depth = cv_depth_image[cX, cY]
@@ -118,6 +123,10 @@ class DetectBallNode(Node):
         t.transform.translation.z = depth_point[2]
         self.tf_broadcaster.sendTransform(t)
 
+        msg = Bool()
+        msg.data = True
+        self.ball_found_publisher.publish(msg)
+
         # Transform Ball relative to "map" frame
         try:
             ball_tf = self.tf_buffer.lookup_transform(
@@ -125,8 +134,8 @@ class DetectBallNode(Node):
                 "ball",
                 rclpy.time.Time())
         except TransformException as ex:
-            self.get_logger().info(
-                f"Could not transform 'map' to 'ball': {ex}")
+            # self.get_logger().info(
+            #     f"Could not transform 'map' to 'ball': {ex}")
             return
 
         # Publish ball_pose to topic in the Behavior Tree
