@@ -1,3 +1,4 @@
 Coordinator:
   ros__parameters:
     main_tree_path: "/home/docker/ros2_ws/src/behavior-tree-coordinator/behaviors/HackathonTree.xml"
+    use_sim_time: True
