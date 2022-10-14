@@ -43,8 +43,8 @@ BT::NodeStatus GetBallPose::on_running()
             {
                 // tf_buffer_->canTransform("base_link", marker_frame_);
                 transformStamped = tf_buffer_->lookupTransform(
-                    "map", marker_frame_, // get_node_handle()->get_clock()->now(), 500ms);
-                    tf2::TimePointZero);
+                    "map", marker_frame_, get_node_handle()->get_clock()->now(), 3s);
+                // tf2::TimePointZero);
             }
             catch (tf2::TransformException &ex)
             {
