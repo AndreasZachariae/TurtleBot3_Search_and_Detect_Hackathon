@@ -20,6 +20,7 @@
 #include <behavior_tree_coordinator/conditions/IsBallFound.h>
 #include <behavior_tree_coordinator/conditions/IsGoalDone.h>
 #include <behavior_tree_coordinator/actions/Spin.h>
+#include <behavior_tree_coordinator/actions/GetBallPose.h>
 
 BT::Tree create_tree(const std::string &path)
 {
@@ -33,6 +34,7 @@ BT::Tree create_tree(const std::string &path)
     factory.registerNodeType<IsBallFound>("IsBallFound");
     factory.registerNodeType<IsGoalDone>("IsGoalDone");
     factory.registerNodeType<Spin>("Spin");
+    factory.registerNodeType<GetBallPose>("GetBallPose");
 
     return factory.createTreeFromFile(path);
 }
