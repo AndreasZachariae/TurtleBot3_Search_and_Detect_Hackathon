@@ -6,9 +6,10 @@
             <ReactiveSequence>
                 <Fallback>
                     <Inverter>
-                        <Condition ID="IsBallFound" ball_quaternion_w="{ball_q_w}" ball_quaternion_x="{ball_q_x}" ball_quaternion_y="{ball_q_y}" ball_quaternion_z="{ball_q_z}" next_goal_trigger="{trigger}" ball_x="{ball_x}" ball_y="{ball_y}"/>
+                        <Condition ID="IsBallFound" ball_quaternion_w="{ball_q_w}" ball_quaternion_x="{ball_q_x}" ball_quaternion_y="{ball_q_y}" ball_quaternion_z="{ball_q_z}" ball_x="{ball_x}" ball_y="{ball_y}" next_goal_trigger="{trigger}"/>
                     </Inverter>
                     <Sequence>
+                        <Action ID="GetBallPose" ball_quaternion_w="{ball_q_w}" ball_quaternion_x="{ball_q_x}" ball_quaternion_y="{ball_q_y}" ball_quaternion_z="{ball_q_z}" ball_x="{ball_x}" ball_y="{ball_y}" ball_z="{ball_z}" marker_frame="ball" max_seconds="10"/>
                         <Action ID="BaseMovement" quaternion_w="{ball_q_w}" quaternion_x="{ball_q_x}" quaternion_y="{ball_q_y}" quaternion_z="{ball_q_z}" x="{ball_x}" y="{ball_z}"/>
                         <ForceSuccess>
                             <Condition ID="IsGoalDone" next_goal_trigger="{trigger}"/>
@@ -43,14 +44,25 @@
         </Action>
         <Condition ID="CheckBattery"/>
         <Condition ID="CheckStop"/>
+        <Action ID="GetBallPose">
+            <output_port name="ball_quaternion_w" type="float"/>
+            <output_port name="ball_quaternion_x" type="float"/>
+            <output_port name="ball_quaternion_y" type="float"/>
+            <output_port name="ball_quaternion_z" type="float"/>
+            <output_port name="ball_x" type="float"/>
+            <output_port name="ball_y" type="float"/>
+            <output_port name="ball_z" type="float"/>
+            <input_port name="marker_frame" type="std::string"/>
+            <input_port name="max_seconds" type="int"/>
+        </Action>
         <Condition ID="IsBallFound">
             <output_port name="ball_quaternion_w" type="float"/>
             <output_port name="ball_quaternion_x" type="float"/>
             <output_port name="ball_quaternion_y" type="float"/>
             <output_port name="ball_quaternion_z" type="float"/>
-            <input_port name="next_goal_trigger" type="bool"/>
             <output_port name="ball_x" type="float"/>
             <output_port name="ball_y" type="float"/>
+            <input_port name="next_goal_trigger" type="bool"/>
         </Condition>
         <Condition ID="IsGoalDone">
             <output_port name="next_goal_trigger" type="bool"/>

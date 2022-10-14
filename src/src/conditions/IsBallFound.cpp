@@ -21,7 +21,7 @@ BT::NodeStatus IsBallFound::on_check()
         log("Next goal triggered, resetting ball_pose_msg");
     }
 
-    if (ball_pose_->position.x != 0.0)
+    if (!ball_pose_->position.x == 0.0)
     {
         setOutput<float>("ball_x", ball_pose_->position.x);
         setOutput<float>("ball_y", ball_pose_->position.y);

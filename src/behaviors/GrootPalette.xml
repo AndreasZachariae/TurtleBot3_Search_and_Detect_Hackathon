@@ -27,16 +27,27 @@
         <Action ID="BaseMovement">
             <input_port name="x" type="float"/>
             <input_port name="y" type="float"/>
-            <input_port name="ball_quaternion_x" type="float"/>
-            <input_port name="ball_quaternion_y" type="float"/>
-            <input_port name="ball_quaternion_z" type="float"/>
-            <input_port name="ball_quaternion_w" type="float"/>
+            <input_port name="quaternion_x" type="float"/>
+            <input_port name="quaternion_y" type="float"/>
+            <input_port name="quaternion_z" type="float"/>
+            <input_port name="quaternion_w" type="float"/>
         </Action>
         <Action ID="Wait">
             <input_port name="seconds" type="int"/>
         </Action>
         <Action ID="Spin">
             <input_port name="target_yaw" type="float"/>
+        </Action>
+        <Action ID="GetBallPose">
+            <input_port name="marker_frame" type="std::string"/>
+            <input_port name="max_seconds" type="int"/>
+            <output_port name="ball_x" type="float"/>
+            <output_port name="ball_y" type="float"/>
+            <output_port name="ball_z" type="float"/>
+            <output_port name="ball_quaternion_x" type="float"/>
+            <output_port name="ball_quaternion_y" type="float"/>
+            <output_port name="ball_quaternion_z" type="float"/>
+            <output_port name="ball_quaternion_w" type="float"/>
         </Action>
     </TreeNodesModel>
 </root>
