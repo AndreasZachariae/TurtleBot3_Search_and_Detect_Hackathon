@@ -4,12 +4,6 @@
         <Condition ID="CheckBattery"/>
         <Condition ID="IsBallFound">
             <input_port name="next_goal_trigger" type="bool"/>
-            <output_port name="ball_x" type="float"/>
-            <output_port name="ball_y" type="float"/>
-            <output_port name="ball_quaternion_x" type="float"/>
-            <output_port name="ball_quaternion_y" type="float"/>
-            <output_port name="ball_quaternion_z" type="float"/>
-            <output_port name="ball_quaternion_w" type="float"/>
         </Condition>
         <Condition ID="IsGoalDone">
             <output_port name="next_goal_trigger" type="bool"/>
