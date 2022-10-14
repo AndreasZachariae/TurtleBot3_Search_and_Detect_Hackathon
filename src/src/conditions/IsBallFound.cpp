@@ -2,8 +2,9 @@
 
 IsBallFound::IsBallFound(const std::string &name, const BT::NodeConfiguration &config) : RosCondition(name, config)
 {
-    ball_pose_subscription_ = get_node_handle()->create_subscription<geometry_msgs::msg::Pose>("ball_pose", 10, [&](const geometry_msgs::msg::Pose::SharedPtr msg)
-                                                                                               { ball_pose_ = msg; });
+    ball_found_subscription_ = get_node_handle()->create_subscription<std_msgs::msg::Bool>("ball_found", 10, [&](const std_msgs::msg::Bool::SharedPtr msg)
+                                                                                           { if (msg->data) 
+                                                                                          {is_ball_found = true;} });
 }
 
 BT::NodeStatus IsBallFound::on_check()
@@ -18,19 +19,14 @@ BT::NodeStatus IsBallFound::on_check()
 
     if (trigger == true)
     {
-        log("Next goal triggered, resetting ball_pose_msg");
+        is_ball_found = false;
+        log("Next goal triggered, resetting ball_found");
     }
 
-    if (!ball_pose_->position.x == 0.0)
+    if (is_ball_found)
     {
-        setOutput<float>("ball_x", ball_pose_->position.x);
-        setOutput<float>("ball_y", ball_pose_->position.y);
-        setOutput<float>("ball_quaternion_x", ball_pose_->orientation.x);
-        setOutput<float>("ball_quaternion_y", ball_pose_->orientation.y);
-        setOutput<float>("ball_quaternion_z", ball_pose_->orientation.z);
-        setOutput<float>("ball_quaternion_w", ball_pose_->orientation.w);
 
-        log("Ball Found at location: (x=" + convert::ftos(ball_pose_->position.x) + ", y=" + convert::ftos(ball_pose_->position.y) + ")");
+        log("Ball Found");
 
         return BT::NodeStatus::SUCCESS;
     }
